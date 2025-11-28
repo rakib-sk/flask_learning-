@@ -1,3 +1,32 @@
+# Day 2
+## Dynamic web site
+- Flask এর সাথে Html link করা
+  - Templates folder তৈরি করে তার মধ্য Html রাখতে হবে।
+  - flask a render_templates function import করতে হবে।
+
+
+## make a form
+- যে কাজ করতে হবে
+  - name - দিতে হবে form এর কারণ name এর সাহায্যে flask form পড়ে।
+  - Method - POST হবে যোদি data পড়তে হয়
+  - route name html এর action এর সাথে মিল থাকবে।
+
+## JINJA in flask
+- এটির সাহায্যে Html এ python varible ar access করা যায়
+- {{ varible }}
+- example <p> {{ name }} </p>
+
+- condition  লেখা
+- example
+
+- isTopper = True
+- {% if isTopper %}
+    <p> You are a topper </p>
+- {% else %}
+    <p> You need hard work </p>
+- {% endif %}
+
+
 # Template Inheritance in Flask (Jinja2)
 
 Template Inheritance হলো এমন একটি সিস্টেম যেখানে আপনি আপনার ওয়েবসাইটের সাধারণ layout (header, footer, navbar ইত্যাদি) একবার define করে বাকি সব pages-এ reuse করতে পারেন। এর ফলে কোড clean থাকে, repeat কমে এবং বড় প্রজেক্ট maintain করা সহজ হয়।

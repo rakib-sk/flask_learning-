@@ -607,11 +607,11 @@ def submit():
 ```
 
 ## 📌 7. Common Use Cases
-```
+
 | 📌 Feature        | 🧪 Example                                   |
 |-------------------|----------------------------------------------|
 | Login success     | `flash("Welcome back!", "success")`          |
 | Login error       | `flash("Wrong password!", "danger")`         |
 | Form error        | `flash("Please fill all fields!", "warning")`|
 | Info message      | `flash("New update available!", "info")`     |
-```
+

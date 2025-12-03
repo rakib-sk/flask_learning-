@@ -493,3 +493,125 @@ Feedback form বানাও:
 Validation manually implement করবে।
 
 ---
+
+# 📌 1. Flash Message কী?
+
+**Flash Message** = Small one-time message  
+যেটা ইউজারকে **পরবর্তী request**-এ দেখানো হয়।
+
+Flask নিজে থেকেই এর জন্য `flash()` এবং `get_flashed_messages()` ফাংশন দেয়।
+
+---
+
+# 📌 2. Flash Message ব্যবহার করতে যা লাগবে
+Flask app-এ **secret_key** থাকতে হবে:
+
+```python
+from flask import Flask, flash, render_template, redirect, url_for
+
+app = Flask(__name__)
+app.secret_key = "your_secret_key"
+```
+## 📌 3. Flash Message সেট করা (Backend)
+
+```python 
+@app.route("/login", methods=["POST"])
+def login():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    if username == "admin" and password == "123":
+        flash("Login Successful!", "success")
+        return redirect(url_for("home"))
+    else:
+        flash("Invalid Username or Password", "danger")
+        return redirect(url_for("login_page"))
+```
+
+## 🔥 এখানে:
+- ***"Login Successful!"*** → মেসেজ
+- ***"success"*** → ক্যাটাগরি (Bootstrap এর class হিসেবে কাজ করে)
+- ***"danger"*** → Error message category
+
+
+## 📌 4. Template-এ Flash Message দেখানো
+***Template-এ সাধারণত base.html এ রাখো:
+(Bootstrap alert ব্যবহার করলে সুন্দর দেখাবে)***
+
+```html
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} mt-2">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+```
+
+## 📌 5. Form + Flash Message (Complete Example)
+***routes.py***
+
+```python 
+from flask import Flask, render_template, request, flash, redirect, url_for
+
+app = Flask(__name__)
+app.secret_key = "12345"
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/submit", methods=["POST"])
+def submit():
+    name = request.form.get("name")
+
+    if not name:
+        flash("Name field cannot be empty!", "warning")
+        return redirect(url_for("index"))
+
+    flash(f"Hello {name}, your form submitted successfully!", "success")
+    return redirect(url_for("index"))
+```
+
+
+*** index.html***
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flash Message Example</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/submit">
+        <input type="text" name="name" placeholder="Enter your name" class="form-control mb-2">
+        <button class="btn btn-primary">Submit</button>
+    </form>
+
+</body>
+</html>
+```
+
+## 📌 7. Common Use Cases
+```
+| 📌 Feature        | 🧪 Example                                   |
+|-------------------|----------------------------------------------|
+| Login success     | `flash("Welcome back!", "success")`          |
+| Login error       | `flash("Wrong password!", "danger")`         |
+| Form error        | `flash("Please fill all fields!", "warning")`|
+| Info message      | `flash("New update available!", "info")`     |
+```

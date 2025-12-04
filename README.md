@@ -615,3 +615,217 @@ def submit():
 | Form error        | `flash("Please fill all fields!", "warning")`|
 | Info message      | `flash("New update available!", "info")`     |
 
+
+# Flask-WTF Registration Form Project
+
+এই প্রোজেক্টে Flask-WTF ব্যবহার করে একটি সহজ Registration Form তৈরি করা হয়েছে।  
+Form validation, flash messages, template inheritance—সবকিছু ক্লিন স্ট্রাকচারে সাজানো হয়েছে।
+
+---
+
+## 📌 Features
+
+- Flask-WTF Form Handling
+- CSRF Protection (`form.hidden_tag()`)
+- Field Validation (Name, Email, Password)
+- Flash Messages (Success Message)
+- Template Inheritance (`base.html` → `register.html`)
+- Redirect on success (“thank you” page)
+
+---
+
+## 🛠️ Installation & Setup
+
+### 1️⃣ Create virtual environment  
+```bash
+python -m venv venv
+source venv/bin/activate   # Linux / Termux
+venv\Scripts\activate      # Windows
+```
+
+### 2️⃣ Install dependencies  
+```bash
+pip install flask flask-wtf
+```
+
+---
+
+## 📁 Project Structure
+
+```
+project/
+│
+├── app.py
+├── forms.py
+├── templates/
+│   ├── base.html
+│   ├── register.html
+│   └── thank.html
+└── README.md
+```
+
+---
+
+## 📄 forms.py
+
+```python
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Email, Length
+
+class RegistrationsForm(FlaskForm):
+    name = StringField("Full name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=8)])
+    submit = SubmitField("Register")
+```
+
+---
+
+## 📄 app.py
+
+```python
+from flask import Flask, render_template, request, redirect, url_for, flash
+from forms import RegistrationsForm
+
+app = Flask(__name__) 
+app.secret_key = "your_secret_key"
+
+@app.route("/", methods=["GET", "POST"])
+def registration():
+    form = RegistrationsForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email.data
+        flash(f"Welcome {name}, you registered successfully!")
+        return redirect(url_for("success"))
+        
+    return render_template("register.html", form=form)
+    
+    
+@app.route("/success")
+def success():
+    return render_template("thank.html")
+    
+    
+if __name__ == "__main__":
+    app.run(debug=True)
+```
+
+---
+
+## 📄 templates/base.html
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Flask-WTF form {% endblock %}</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Flask WTF Registration</h1>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <p style="color: green">{{ msg }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer>
+      <p>RooTcore6 — All rights reserved</p>
+    </footer>
+  </body>
+</html>
+```
+
+---
+
+## 📄 templates/register.html
+
+```html
+{% extends "base.html" %}
+
+{% block title %} Register page {% endblock %}
+
+{% block content %}
+<h2>Registration Form</h2>
+
+<form method="POST" action="/">
+  {{ form.hidden_tag() }}
+
+  <p>
+    {{ form.name.label }}<br>
+    {{ form.name(size=32) }}<br>
+    {% for error in form.name.errors %}
+      <span style="color:red;">{{ error }}</span>
+    {% endfor %}
+  </p>
+
+  <p>
+    {{ form.email.label }}<br>
+    {{ form.email(size=32) }}<br>
+    {% for error in form.email.errors %}
+      <span style="color:red;">{{ error }}</span>
+    {% endfor %}
+  </p>
+
+  <p>
+    {{ form.password.label }}<br>
+    {{ form.password(size=32) }}<br>
+    {% for error in form.password.errors %}
+      <span style="color:red;">{{ error }}</span>
+    {% endfor %}
+  </p>
+
+  <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}
+```
+
+---
+
+## 📄 templates/thank.html
+
+```html
+{% extends "base.html" %}
+
+{% block title %} Thank You {% endblock %}
+
+{% block content %}
+<h2>Registration Successful!</h2>
+<p>Your form was submitted correctly.</p>
+{% endblock %}
+```
+
+---
+
+## 🚀 Run the App
+
+```bash
+python app.py
+```
+
+Visit:  
+```
+http://127.0.0.1:5000/
+```
+
+---
+
+## ✔️ Summary
+
+- Form → Validate → Flash → Redirect → Thank Page  
+- Flask-WTF + Template Inheritance দিয়ে simple registration system  
+- Clean, expandable structure (Login page, DB integration easily add করা যাবে)
+
+---
+
